@@ -55,5 +55,5 @@ if __name__=="__main__":
     # print(get_data_columns())
     print('Heart Attack Possible: ',predict_disease(60,1,3,200,393,121,176))
     print('Heart Attack Possible: ',predict_disease(60,1,3,140,203,150,123))
-    print('Heart Attack Possible: ',predict_disease(20,0,3,200,400,121,190))
-    print('Heart Attack Possible: ',predict_disease(80,0,4,200,393,100,176))
+    # print('Heart Attack Possible: ',predict_disease(20,0,3,200,400,121,190))
+    # print('Heart Attack Possible: ',predict_disease(80,0,4,200,393,100,176))
