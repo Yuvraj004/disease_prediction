@@ -14,8 +14,15 @@ def get_data_columns():
     response.headers.add('Access-Control-Allow-Origin','*')
     return response
 
-@app.route('/predict_disease', methods=['GET', 'POST'])
+@app.route('/predict_disease', methods=['GET', 'POST','OPTIONS'])
 def predict_disease():
+    if request.method == 'OPTIONS':  # Handle preflight requests
+        headers = {
+            'Access-Control-Allow-Origin': 'no-cors',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
+        return '', 200, headers
     age = float(request.form['age'])
     sex = request.form['sex']
     chest_pain_type = int(request.form['chest_pain_type'])
@@ -27,7 +34,7 @@ def predict_disease():
     response = jsonify({
         'disease_chances': util.predict_disease(sex,age,chest_pain_type,resting_bp,cholesterol,blood_sugar,max_heart_rate)
     })
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Origin', 'no-cors')
 
     return response
 
