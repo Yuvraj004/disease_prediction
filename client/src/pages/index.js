@@ -1,8 +1,16 @@
 import { Inter } from "next/font/google";
-
+import { useState } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const [fullname,setFullName] = useState("");
+  const [sex,setSex] = useState(0);
+  const [age,setAge] = useState(0);
+  const [chestpaintype,setChestPainType] = useState(0);
+  const [restingbp,SetRestingBP] = useState(0);
+  const [cholesterol,SetCholesterol] = useState(0);
+  const [bloodsugar, SetBloodSugar] = useState(0);
+  const [maxheartrate,SetMaxHeartRate] = useState(0);
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
@@ -24,7 +32,8 @@ export default function Home() {
                 className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                 id="inline-full-name"
                 type="text"
-                value="Jane Doe"
+                value={fullname}
+                onChange={(e)=>setFullName(e.target.value)}
               />
             </div>
           </div>
