@@ -46,7 +46,7 @@ def predict_disease(age, sex, chest_pain_type, resting_bp, cholesterol, blood_su
     input_data = np.concatenate([input_data, mis_array])
     
     input_df = pd.DataFrame([input_data], columns=data_columns)
-    print(input_df)
+    # print(input_df)
     return model.predict(input_df)[0]
 
 

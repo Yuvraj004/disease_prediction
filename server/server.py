@@ -18,27 +18,35 @@ def get_data_columns():
 def predict_disease():
     if request.method == 'OPTIONS':  # Handle preflight requests
         headers = {
-            'Access-Control-Allow-Origin': 'no-cors',
+            'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type'
         }
         return '', 200, headers
-    age = float(request.form['age'])
-    sex = request.form['sex']
-    chest_pain_type = int(request.form['chest_pain_type'])
-    resting_bp = int(request.form['resting_bp'])
-    cholesterol = int(request.form['cholesterol'])
-    blood_sugar = int(request.form['blood_sugar'])
-    max_heart_rate = int(request.form['max_heart_rate'])
-
+    data = request.get_json()
+    # response = jsonify({'var': data})
+    
+    print(data)
+    age = float(data['age'])
+    sex = int(data['sex'])
+    chest_pain_type = int(data['chestpaintype'])
+    resting_bp = int(data['restingbp'])
+    cholesterol = int(data['cholesterol'])
+    blood_sugar = int(data['bloodsugar'])
+    max_heart_rate = int(data['max_heart_rate'])
+    chance = util.predict_disease(sex,age,chest_pain_type,resting_bp,cholesterol,blood_sugar,max_heart_rate)
+    print(chance," ",type(chance))
     response = jsonify({
-        'disease_chances': util.predict_disease(sex,age,chest_pain_type,resting_bp,cholesterol,blood_sugar,max_heart_rate)
+        'disease_chances': chance
     })
-    response.headers.add('Access-Control-Allow-Origin', 'no-cors')
+    # response = jsonify({
+    #     'disease_chances': 
+    # })
+    response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
 
 if __name__ =="__main__":
     print("Python Flask Server")
     util.load_saved_artifacts()
-    app.run()
+    app.run(debug=True)

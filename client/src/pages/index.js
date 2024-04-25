@@ -47,7 +47,6 @@ export default function Home() {
       bloodsugar,
       max_heart_rate,
     };
-    
     try {
       // Send the form data to the backend using fetch API
       const response = await fetch('http://localhost:5000/predict_disease', {
