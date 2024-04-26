@@ -7,8 +7,16 @@ app = Flask(__name__) #module
 def hello():
     return "Hi"
 
-@app.route('/get_data_columns', methods=['GET'])
+@app.route('/get_data_columns', methods=['GET','OPTIONS'])
 def get_data_columns():
+    if request.method == 'OPTIONS':  # Handle preflight requests
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
+        return '', 200, headers
+    
     response = jsonify({
         'Data_Columns': util.get_data_columns()
     })

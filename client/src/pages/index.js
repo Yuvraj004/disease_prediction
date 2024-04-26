@@ -7,7 +7,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import img from "../assets/dp.jpeg";
 const navigation = [
   { name: 'Dashboard', href: '/', current: true },
-  { name: 'Columns', href: '/get_columns', current: false },
+  { name: 'Columns', href: '/columns', current: false },
   { name: 'Projects', href: '#', current: false },
   { name: 'Calendar', href: '#', current: false },
 ]
@@ -26,20 +26,6 @@ export default function Home() {
   const [max_heart_rate,Setmax_heart_rate] = useState(0);
   const [data,setData]= useState("");
 
-  // useEffect(async ()=>{
-  //   let res = await fetch('http://localhost:5000/get_data_columns',{
-  //     method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     })
-  //     if (res) {
-  //       const data = await res.json();
-  //       console.log('Prediction result:', data);
-  //     } else {
-  //       console.error('Error:', res.status);
-  //     }
-  //   })
   const handleRadioChange = (event) => {
     setSex(event.target.value);
   };
