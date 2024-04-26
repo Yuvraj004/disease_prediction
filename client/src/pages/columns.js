@@ -32,7 +32,10 @@ function columns() {
                 Click Me
             </button>
             </div>
-        <p>{data}</p>
+        <div>
+            {data && data.Data_Columns.map((columnName,index)=>(
+            <div key={index}>{index}&nbsp;:&nbsp;{columnName}</div>
+        ))}</div>
         </div>
   )
 }
