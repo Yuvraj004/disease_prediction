@@ -11,6 +11,7 @@ export default function Home() {
   const [cholesterol,SetCholesterol] = useState(0);
   const [bloodsugar, SetBloodSugar] = useState(0);
   const [max_heart_rate,Setmax_heart_rate] = useState(0);
+  const [data,setData]= useState("");
 
   // useEffect(async ()=>{
   //   let res = await fetch('http://localhost:5000/get_data_columns',{
@@ -59,8 +60,9 @@ export default function Home() {
       console.log(formData);
       // Handle the response from the backend
       if (response.ok) {
-        const data = await response.json();
-        console.log('Prediction result:', data);
+        const dataI = await response.json();
+        setData(dataI)
+        console.log('Prediction result:', dataI);
         // Do something with the prediction result
       } else {
         console.error('Error:', response.status);
@@ -74,6 +76,18 @@ export default function Home() {
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
     >
       <section></section>
+      <div >
+        {data ?
+            <div className="bg-indigo-900 text-center py-4 lg:px-4 rounded-full" >
+              <div className="p-2 bg-indigo-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex" role="alert">
+                <span className="flex rounded-full bg-indigo-500 uppercase px-2 py-1 text-xs font-bold mr-3">New</span>
+                <span className="font-semibold mr-2 text-left flex-auto">{
+                ( data==1? "Person has a heart condition":"Person do not have any chances of heart condition" ) }</span>
+                <svg className="fill-current opacity-75 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243L8 15.657l4.95-4.95z"/></svg>
+              </div>
+          </div>
+          :""}
+      </div>
       <section>
         <form className="w-full max-w-sm">
           <div className="md:flex md:items-center mb-6">
@@ -99,7 +113,7 @@ export default function Home() {
             <div className="md:w-1/3">
               <label
                 className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-                htmlFor="inline-password"
+                
               >
                 Sex
               </label>
@@ -137,8 +151,17 @@ export default function Home() {
               <label htmlFor="age" className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">Age</label>
             </div>
             <div className="md:w-2/3">
-              <input type="number" id="age" name="age" min="1" value= {age}className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              onChange={(e) => setAge(e.target.value)}/>
+              <input type="number" id="age" name="age" min="1" max="90" value= {age}className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+              onChange={(e) => {
+                  const inputValue = e.target.value;
+                  if (inputValue <= 90) {
+                    setAge(inputValue);
+                  } else {
+                    alert("Age cannot be greater than 90");
+                    setAge(90);
+                  }
+                }
+              }/>
             </div>
           </div>
 
@@ -219,6 +242,7 @@ export default function Home() {
             </div>
           </div>
         </form>
+        
       </section>
     </main>
   );

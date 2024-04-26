@@ -1,4 +1,5 @@
 from flask import Flask,request,jsonify
+import numpy as np
 import util
 app = Flask(__name__) #module
 
@@ -24,7 +25,6 @@ def predict_disease():
         }
         return '', 200, headers
     data = request.get_json()
-    # response = jsonify({'var': data})
     
     print(data)
     age = float(data['age'])
@@ -34,14 +34,18 @@ def predict_disease():
     cholesterol = int(data['cholesterol'])
     blood_sugar = int(data['bloodsugar'])
     max_heart_rate = int(data['max_heart_rate'])
+
     chance = util.predict_disease(sex,age,chest_pain_type,resting_bp,cholesterol,blood_sugar,max_heart_rate)
     print(chance," ",type(chance))
+
+    if isinstance(chance, np.ndarray):
+        chance = chance.tolist()
+    elif isinstance(chance, (np.int64, np.float64)):
+        chance = chance.item()
+
     response = jsonify({
         'disease_chances': chance
     })
-    # response = jsonify({
-    #     'disease_chances': 
-    # })
     response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
