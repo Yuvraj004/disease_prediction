@@ -1,6 +1,7 @@
 from flask import Flask,request,jsonify
 import numpy as np
 import util
+import os
 app = Flask(__name__) #module
 
 @app.route('/')
@@ -61,4 +62,5 @@ def predict_disease():
 if __name__ =="__main__":
     print("Python Flask Server")
     util.load_saved_artifacts()
+    port = int(os.environ.get('PORT', 5000))
     app.run(debug=True)
