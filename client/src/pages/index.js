@@ -25,7 +25,7 @@ export default function Home() {
   const [bloodsugar, SetBloodSugar] = useState(0);
   const [max_heart_rate,Setmax_heart_rate] = useState(0);
   const [data,setData]= useState("");
-
+  const BACKEND_URL  = process.env.BACKEND_URL || 'https://predictionbackend.onrender.com' ;
   const handleRadioChange = (event) => {
     setSex(event.target.value);
   };
@@ -49,7 +49,7 @@ export default function Home() {
     };
     try {
       // Send the form data to the backend using fetch API
-      const response = await fetch('http://localhost:5000/predict_disease', {
+      const response = await fetch(`${BACKEND_URL}/predict_disease`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

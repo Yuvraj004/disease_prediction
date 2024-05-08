@@ -2,7 +2,6 @@ import React, { Fragment, useState } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import img from "../assets/dp.jpeg";
-import Image from 'next/image';
 const navigation = [
   { name: 'Dashboard', href: '/', current: true },
   { name: 'Columns', href: '/columns', current: false },
@@ -15,11 +14,12 @@ function classNames(...classes) {
 }
 function Columns() {
     const [data,setData] = useState("");
+    const BACKEND_URL  = process.env.BACKEND_URL || 'https://predictionbackend.onrender.com' ;
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             // Send the form data to the backend using fetch API
-            const response = await fetch('http://localhost:5000/get_data_columns', {
+            const response = await fetch(`${BACKEND_URL}/get_data_columns`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ function Columns() {
                   </div>
                   <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                     <div className="flex flex-shrink-0 items-center">
-                      <Image
+                      <img
                         className="h-8 w-auto"
                         src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                         alt="Your Company"
@@ -99,7 +99,7 @@ function Columns() {
                         <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
-                          <Image
+                          <img
                             className="h-8 w-8 rounded-full"
                             src={img}
                             alt="No IMG"
