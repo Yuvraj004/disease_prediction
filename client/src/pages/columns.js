@@ -12,7 +12,7 @@ const navigation = [
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
-function columns() {
+function Columns() {
     const [data,setData] = useState("");
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -198,4 +198,4 @@ function columns() {
   )
 }
 
-export default columns
+export default Columns
