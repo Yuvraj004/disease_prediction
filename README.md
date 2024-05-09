@@ -36,10 +36,9 @@ Before running the application, ensure you have the following installed:
   - cd ../server
   - python server.py
 3. Open your web browser and navigate to `http://localhost:3000` to access the application.
-
 ## Deployment
 
-To deploy the application, you can use a platform like Render or Vercel for the Next.js frontend and a service like Heroku or AWS Elastic Beanstalk for the Flask backend.
+Deployed On :  https://predictdisease.netlify.app/
 
 ## Contributing
 
