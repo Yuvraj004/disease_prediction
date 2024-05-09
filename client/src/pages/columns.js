@@ -14,7 +14,7 @@ function classNames(...classes) {
 }
 function Columns() {
     const [data,setData] = useState("");
-    const BACKEND_URL  = process.env.BACKEND_URL || 'https://predictionbackend.onrender.com' ;
+    const BACKEND_URL  = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://localhost:5000' ;
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
