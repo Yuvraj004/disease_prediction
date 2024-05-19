@@ -29,7 +29,7 @@ export default function Home() {
   const [bloodsugar, SetBloodSugar] = useState(0);
   const [max_heart_rate,Setmax_heart_rate] = useState(0);
   const [data,setData]= useState("");
-  const BACKEND_URL  = process.env.BACKEND_URL || 'https://predictionbackend.onrender.com' ;
+  const BACKEND_URL  = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://predictionbackend.onrender.com' ;
   const [loading, setLoading] = useState(false);
   const handleRadioChange = (event) => {
     setSex(event.target.value);
