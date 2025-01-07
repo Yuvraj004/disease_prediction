@@ -4,7 +4,7 @@ const inter = Inter({ subsets: ["latin"] });
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import img from "../assets/dp.jpeg";
+// import img from "../assets/dp.jpeg";
 // import "./loader.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -110,7 +110,7 @@ export default function Home() {
                         <div className="flex flex-shrink-0 items-center">
                           <img
                             className="h-8 w-auto"
-                            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                            src="/company.jpg"
                             alt="Your Company"
                           />
                         </div>
@@ -150,7 +150,7 @@ export default function Home() {
                               <span className="sr-only">Open user menu</span>
                               <img
                                 className="h-8 w-8 rounded-full"
-                                src={img}
+                                src="/dp.jpeg"
                                 alt="No IMG"
                               />
                             </Menu.Button>
@@ -224,11 +224,8 @@ export default function Home() {
               )}
             </Disclosure>
           <main
-            className={`flex min-h-screen flex-col items-center justify-between p-10 ${inter.className}`}
+            className={`flex min-h-screen flex-col items-center pt-5 ${inter.className}`}
           >
-            <section>
-              
-            </section>
             <div >
               {data ?
                   <div className="bg-indigo-900 text-center py-4 lg:px-4 rounded-full" >
