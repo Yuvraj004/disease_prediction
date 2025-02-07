@@ -1,386 +1,432 @@
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
+import { Fragment } from "react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import {
+  Bars3Icon,
+  BellIcon,
+  XMarkIcon,
+  HeartIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
+import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
+
 const inter = Inter({ subsets: ["latin"] });
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import img from "../assets/dp.jpeg";
+
 const navigation = [
-  { name: 'Dashboard', href: '/', current: true },
-  { name: 'Columns', href: '/columns', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-]
+  { name: "Dashboard", href: "/", current: true },
+  { name: "Columns", href: "/columns", current: false },
+  { name: "Projects", href: "#", current: false },
+  { name: "Calendar", href: "#", current: false },
+];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
-export default function Home() {
-  const [fullname,setFullName] = useState("");
-  const [sex,setSex] = useState(0);
-  const [age,setAge] = useState(0);
-  const [chestpaintype,setChestPainType] = useState(0);
-  const [restingbp,SetRestingBP] = useState(0);
-  const [cholesterol,SetCholesterol] = useState(0);
-  const [bloodsugar, SetBloodSugar] = useState(0);
-  const [max_heart_rate,Setmax_heart_rate] = useState(0);
-  const [data,setData]= useState("");
 
-  const handleRadioChange = (event) => {
-    setSex(event.target.value);
+export default function Home() {
+  const [formData, setFormData] = useState({
+    fullname: "",
+    sex: 0,
+    age: "",
+    chestpaintype: 1,
+    restingbp: "",
+    cholesterol: "",
+    bloodsugar: "",
+    max_heart_rate: "",
+  });
+  const [predictionResult, setPredictionResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-  const handleChestPainTypeChange = (event) => {
-    setChestPainType(event.target.value);
+
+  const validateForm = () => {
+    if (!formData.fullname.trim()) return "Full name is required";
+    if (!formData.age || formData.age < 1 || formData.age > 90)
+      return "Age must be between 1 and 90";
+    if (!formData.restingbp || formData.restingbp < 1)
+      return "Valid resting BP is required";
+    if (!formData.cholesterol || formData.cholesterol < 1)
+      return "Valid cholesterol is required";
+    if (!formData.bloodsugar || formData.bloodsugar < 1)
+      return "Valid blood sugar is required";
+    if (!formData.max_heart_rate || formData.max_heart_rate < 1)
+      return "Valid max heart rate is required";
+    return null;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Here, you can send the form data to the backend
-    
-    const formData = {
-      fullname,
-      sex,
-      age,
-      chestpaintype,
-      restingbp,
-      cholesterol,
-      bloodsugar,
-      max_heart_rate,
-    };
+    setError("");
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      // Send the form data to the backend using fetch API
-      const response = await fetch('http://localhost:5000/predict_disease', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/predict_disease", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-      console.log(formData);
-      // Handle the response from the backend
-      if (response.ok) {
-        const dataI = await response.json();
-        setData(dataI)
-        console.log('Prediction result:', dataI);
-        // Do something with the prediction result
-      } else {
-        console.error('Error:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+      setPredictionResult(data);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
+      setError("Failed to process your request. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
+
   return (
-    <>
-      <Disclosure as="nav" className="bg-gray-800">
-          {({ open }) => (
-            <>
-              <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-                <div className="relative flex h-16 items-center justify-between">
-                  <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                    {/* Mobile menu button*/}
-                    <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                      <span className="absolute -inset-0.5" />
-                      <span className="sr-only">Open main menu</span>
-                      {open ? (
-                        <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                      ) : (
-                        <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                      )}
-                    </Disclosure.Button>
-                  </div>
-                  <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                    <div className="flex flex-shrink-0 items-center">
-                      <img
-                        className="h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
-                      />
-                    </div>
-                    <div className="hidden sm:ml-6 sm:block">
-                      <div className="flex space-x-4">
-                        {navigation.map((item) => (
-                          <a
-                            key={item.name}
-                            href={item.href}
-                            className={classNames(
-                              item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                              'rounded-md px-3 py-2 text-sm font-medium'
-                            )}
-                            aria-current={item.current ? 'page' : undefined}
-                          >
-                            {item.name}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <button
-                      type="button"
-                      className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    >
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
-
-                    {/* Profile dropdown */}
-                    <Menu as="div" className="relative ml-3">
-                      <div>
-                        <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                          <span className="absolute -inset-1.5" />
-                          <span className="sr-only">Open user menu</span>
-                          <img
-                            className="h-8 w-8 rounded-full"
-                            src={img}
-                            alt="No IMG"
-                          />
-                        </Menu.Button>
-                      </div>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <a
-                                href="#"
-                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                              >
-                                Your Profile
-                              </a>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <a
-                                href="#"
-                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                              >
-                                Settings
-                              </a>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <a
-                                href="#"
-                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                              >
-                                Sign out
-                              </a>
-                            )}
-                          </Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-                  </div>
-                </div>
-              </div>
-
-              <Disclosure.Panel className="sm:hidden">
-                <div className="space-y-1 px-2 pb-3 pt-2">
-                  {navigation.map((item) => (
-                    <Disclosure.Button
-                      key={item.name}
-                      as="a"
-                      href={item.href}
-                      className={classNames(
-                        item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'block rounded-md px-3 py-2 text-base font-medium'
-                      )}
-                      aria-current={item.current ? 'page' : undefined}
-                    >
-                      {item.name}
-                    </Disclosure.Button>
-                  ))}
-                </div>
-              </Disclosure.Panel>
-            </>
-          )}
-        </Disclosure>
-      <main
-        className={`flex min-h-screen flex-col items-center justify-between p-10 ${inter.className}`}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <Disclosure
+        as="nav"
+        className="bg-gray-800/50 backdrop-blur-lg border-b border-gray-700"
       >
-        <section>
-          
-        </section>
-        <div >
-          {data ?
-              <div className="bg-indigo-900 text-center py-4 lg:px-4 rounded-full" >
-                <div className="p-2 bg-indigo-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex" role="alert">
-                  <span className="flex rounded-full bg-indigo-500 uppercase px-2 py-1 text-xs font-bold mr-3">New</span>
-                  <span className="font-semibold mr-2 text-left flex-auto">{
-                  ( data==1? "Person has a heart condition":"Person do not have any chances of heart condition" ) }</span>
-                  <svg className="fill-current opacity-75 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243L8 15.657l4.95-4.95z"/></svg>
+        {({ open }) => (
+          <>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="relative flex h-16 items-center justify-between">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0 transition-transform duration-200 hover:scale-110 active:scale-95">
+                    <img
+                      className="h-10 w-10"
+                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                      alt="Your Company"
+                    />
+                  </div>
+                  <div className="hidden md:block">
+                    <div className="ml-10 flex items-baseline space-x-4">
+                      {navigation.map((item) => (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          className={classNames(
+                            item.current
+                              ? "bg-indigo-600 text-white"
+                              : "text-gray-300 hover:bg-indigo-500 hover:text-white",
+                            "rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+                          )}
+                          aria-current={item.current ? "page" : undefined}
+                        >
+                          {item.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-            </div>
-            :""}
-        </div>
-        <section>
-          <form className="w-full max-w-sm">
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/3">
-                <label
-                  className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-                  htmlFor="inline-full-name"
-                >
-                  Full Name
-                </label>
-              </div>
-              <div className="md:w-2/3">
-                <input
-                  className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                  id="inline-full-name"
-                  type="text"
-                  value={fullname}
-                  onChange={(e)=>setFullName(e.target.value)}
-                />
               </div>
             </div>
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/3">
-                <label
-                  className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-                  
-                >
-                  Sex
-                </label>
-              </div>
-              <div className="md:w-2/3">
-                <div className="flex items-center space-x-4">
-                  <input
-                    type="radio"
-                    id="option1"
-                    name="radio-group"
-                    value="1"
-                    className="focus:ring-indigo-500 focus:ring-opacity-50 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                    onChange={handleRadioChange}
+          </>
+        )}
+      </Disclosure>
+
+      <main className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          {error && (
+            <div className="mb-8 rounded-lg p-4 bg-red-900/50 border border-red-700">
+              <p className="text-red-400">{error}</p>
+            </div>
+          )}
+
+          {predictionResult !== null && (
+            <div
+              className={classNames(
+                "mb-8 rounded-lg p-4 transition-all duration-500",
+                predictionResult === 1
+                  ? "bg-red-900/50 border border-red-700"
+                  : "bg-green-900/50 border border-green-700"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <HeartIcon
+                    className={classNames(
+                      "h-6 w-6",
+                      predictionResult === 1 ? "text-red-400" : "text-green-400"
+                    )}
                   />
-                  <label htmlFor="option1" className="text-sm font-medium text-gray-700">
-                    male
+                  <p className="text-lg font-semibold text-white">
+                    {predictionResult === 1
+                      ? "Potential heart condition detected"
+                      : "No significant heart condition detected"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="rounded-lg bg-gray-800/50 backdrop-blur-lg border border-gray-700 p-8 transition-all duration-300">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                <div className="relative">
+                  <HeartIconSolid className="h-8 w-8 text-red-600 animate-beat" />
+                  <div className="absolute -inset-1 bg-indigo-500/20 animate-ping rounded-full" />
+                </div>
+                Heart Health Prediction
+              </h1>
+              <p className="mt-2 text-gray-400">
+                Enter your health details below for a preliminary heart
+                condition assessment
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Full Name
                   </label>
                   <input
-                    type="radio"
-                    id="option2"
-                    name="radio-group"
-                    value="0"
-                    className="focus:ring-indigo-500 focus:ring-opacity-50 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                    onChange={handleRadioChange}
+                    type="text"
+                    name="fullname"
+                    value={formData.fullname}
+                    onChange={handleInputChange}
+                    className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
                   />
-                  <label htmlFor="option2" className="text-sm font-medium text-gray-700">
-                    female
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Sex
                   </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="sex"
+                        value={1}
+                        checked={formData.sex === 1}
+                        onChange={handleInputChange}
+                        className="form-radio text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span className="text-gray-300">Male</span>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="sex"
+                        value={0}
+                        checked={formData.sex === 0}
+                        onChange={handleInputChange}
+                        className="form-radio text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span className="text-gray-300">Female</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Age
+                  </label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={formData.age}
+                    onChange={handleInputChange}
+                    min="1"
+                    max="90"
+                    className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Chest Pain Type
+                  </label>
+                  <select
+                    name="chestpaintype"
+                    value={formData.chestpaintype}
+                    onChange={handleInputChange}
+                    className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                  >
+                    {[1, 2, 3, 4].map((num) => (
+                      <option key={num} value={num} className="bg-gray-800">
+                        Type {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Resting BP
+                  </label>
+                  <input
+                    type="number"
+                    name="restingbp"
+                    value={formData.restingbp}
+                    onChange={handleInputChange}
+                    min="1"
+                    className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Cholesterol
+                  </label>
+                  <input
+                    type="number"
+                    name="cholesterol"
+                    value={formData.cholesterol}
+                    onChange={handleInputChange}
+                    min="1"
+                    className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Blood Sugar (g/ml)
+                  </label>
+                  <input
+                    type="number"
+                    name="bloodsugar"
+                    value={formData.bloodsugar}
+                    onChange={handleInputChange}
+                    min="1"
+                    className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">
+                    Max Heart Rate
+                  </label>
+                  <input
+                    type="number"
+                    name="max_heart_rate"
+                    value={formData.max_heart_rate}
+                    onChange={handleInputChange}
+                    min="1"
+                    className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all duration-200"
+                  />
                 </div>
               </div>
-            </div>
-            
-            <div className="md:flex md:items-center mb-6"> 
-              <div className="md:w-1/3">
-                <label htmlFor="age" className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">Age</label>
-              </div>
-              <div className="md:w-2/3">
-                <input type="number" id="age" name="age" min="1" max="90" value= {age}className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue <= 90) {
-                      setAge(inputValue);
-                    } else {
-                      alert("Age cannot be greater than 90");
-                      setAge(90);
-                    }
-                  }
-                }/>
-              </div>
-            </div>
 
-            <div className="md:flex md:items-center mb-6">
-              <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="grid-state">
-                Chest Pain Type
-              </label>
-              <div className="relative">
-                <select id="grid-state" className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                value={chestpaintype}
-                onChange={handleChestPainTypeChange}
-                >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                </select>
-
-                <input type="hidden" id="selected-value"/>
-
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg className="fill-current h-4 w-4 ml-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:flex md:items-center mb-6"> 
-              <div className="md:w-1/3">
-                <label htmlFor="bp" className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">Resting BP</label>
-              </div>
-              <div className="md:w-2/3">
-                <input type="number" id="bp" name="bp" value={restingbp} 
-                onChange={(e) => SetRestingBP(e.target.value)}
-                min="1" className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
-              </div>
-            </div>
-
-            <div className="md:flex md:items-center mb-6"> 
-              <div className="md:w-1/3">
-                <label htmlFor="cholesterol" className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">Cholesterol</label>
-              </div>
-              <div className="md:w-2/3">
-                <input type="number" id="cholesterol" name="cholesterol" value={cholesterol} onChange={(e) => SetCholesterol(e.target.value)} min="1" className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
-              </div>
-            </div>
-
-            <div className="md:flex md:items-center mb-6"> 
-              <div className="md:w-1/3">
-                <label htmlFor="blood_sugar" className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">Blood Sugar (g/ml)</label>
-              </div>
-              <div className="md:w-2/3">
-                <input type="number" id="blood_sugar" name="blood_sugar" value={bloodsugar} onChange={(e)=> SetBloodSugar(e.target.value)}
-                min="1" className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
-              </div>
-            </div>
-
-            <div className="md:flex md:items-center mb-6"> 
-              <div className="md:w-1/3">
-                <label htmlFor="max_heart_rate" className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">Max Heart Rate</label>
-              </div>
-              <div className="md:w-2/3">
-                <input type="number" id="max_heart_rate" name="max_heart_rate" value={max_heart_rate} 
-                onChange={(e) => Setmax_heart_rate(e.target.value)} 
-                min="1" className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
-              </div>
-            </div>
-
-            <div className="md:flex md:items-center">
-              <div className="md:w-1/3"></div>
-              <div className="md:w-2/3">
+              <div className="flex justify-end">
                 <button
-                  className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-                  type="button"
-                  onClick={(e) => handleSubmit(e)}
+                  type="submit"
+                  disabled={isLoading}
+                  className={classNames(
+                    "inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 active:scale-95",
+                    isLoading
+                      ? "bg-gray-600 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-500"
+                  )}
                 >
-                  Predict
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    "Predict Heart Condition"
+                  )}
                 </button>
               </div>
-            </div>
-          </form>
-          
-        </section>
+            </form>
+          </div>
+        </div>
       </main>
-    </>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes beat {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+        }
+
+        @keyframes beat-fast {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.2);
+          }
+        }
+
+        @keyframes beat-normal {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out forwards;
+        }
+
+        .animate-beat {
+          animation: beat 2s ease-in-out infinite;
+        }
+
+        .animate-beat-fast {
+          animation: beat-fast 0.8s ease-in-out infinite;
+        }
+
+        .animate-beat-normal {
+          animation: beat-normal 1.2s ease-in-out infinite;
+        }
+      `}</style>
+    </div>
   );
 }
